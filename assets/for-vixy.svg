@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" width="100%" height="100%">
+  <defs>
+    <!-- Background Card Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117" />
+      <stop offset="100%" stop-color="#161b22" />
+    </linearGradient>
+
+    <!-- Animated Border Gradient -->
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff2a85">
+        <animate attributeName="stop-color" values="#ff2a85;#8b5cf6;#00f0ff;#3b82f6;#ff2a85" dur="6s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="50%" stop-color="#00f0ff">
+        <animate attributeName="stop-color" values="#00f0ff;#3b82f6;#ff2a85;#8b5cf6;#00f0ff" dur="6s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="100%" stop-color="#8b5cf6">
+        <animate attributeName="stop-color" values="#8b5cf6;#00f0ff;#3b82f6;#ff2a85;#8b5cf6" dur="6s" repeatCount="indefinite" />
+      </stop>
+    </linearGradient>
+
+    <!-- Animated Text Fill Gradient -->
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff2a85">
+        <animate attributeName="stop-color" values="#ff2a85;#8b5cf6;#00f0ff;#3b82f6;#ff2a85" dur="4s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="50%" stop-color="#00f0ff">
+        <animate attributeName="stop-color" values="#00f0ff;#ff2a85;#8b5cf6;#00f0ff;#00f0ff" dur="4s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="100%" stop-color="#8b5cf6">
+        <animate attributeName="stop-color" values="#8b5cf6;#00f0ff;#ff2a85;#8b5cf6;#8b5cf6" dur="4s" repeatCount="indefinite" />
+      </stop>
+    </linearGradient>
+  </defs>
+
+  <style>
+    @keyframes floatLevitate {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+    @keyframes pulseGlow {
+      0%, 100% {
+        filter: drop-shadow(0 0 15px rgba(255, 42, 133, 0.7)) drop-shadow(0 0 30px rgba(0, 240, 255, 0.4));
+      }
+      50% {
+        filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.8)) drop-shadow(0 0 50px rgba(139, 92, 246, 0.6));
+      }
+    }
+    .text-box {
+      animation: floatLevitate 3.5s ease-in-out infinite;
+      transform-origin: center;
+    }
+    .hero-text {
+      font-family: 'Segoe UI', 'Montserrat', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      font-weight: 800;
+      font-size: 110px;
+      letter-spacing: 2px;
+      fill: url(#textGrad);
+      animation: pulseGlow 3.5s ease-in-out infinite;
+    }
+  </style>
+
+  <!-- Container -->
+  <rect x="12" y="12" width="876" height="296" rx="24" fill="url(#bgGrad)" stroke="url(#borderGrad)" stroke-width="2" />
+
+  <!-- Ambient background glow circles -->
+  <circle cx="340" cy="160" r="140" fill="#ff2a85" opacity="0.08">
+    <animate attributeName="r" values="120;160;120" dur="4s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="0.05;0.12;0.05" dur="4s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="560" cy="160" r="140" fill="#00f0ff" opacity="0.08">
+    <animate attributeName="r" values="160;120;160" dur="4s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="0.12;0.05;0.12" dur="4s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- Big Animated Text -->
+  <g class="text-box">
+    <text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" class="hero-text">
+      For VIXY
+    </text>
+  </g>
+</svg>

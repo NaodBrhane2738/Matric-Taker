@@ -1,0 +1,8 @@
+# Large data and textbook files
+Books/
+*.pdf
+
+# Python artifacts
+__pycache__/
+*.pyc
+.env
