@@ -288,12 +288,12 @@ Generate the exact JSON hierarchy adhering strictly to these specifications.`;
             type="button"
             onClick={async () => {
               await restoreOfficialCurriculum();
-              setStatusMessage('Official Ethiopian Secondary Curriculum (116 units) restored!');
+              setStatusMessage('Official Ethiopian Secondary Curriculum (100 units) restored!');
               setTimeout(() => setStatusMessage(null), 4000);
             }}
             className="rounded-xl bg-green px-3.5 py-1.5 text-2xs font-semibold text-white hover:bg-green-dark transition-colors shadow-xs ml-auto"
           >
-            Restore Official Ethiopian Curriculum (116 Units)
+            Restore Official Ethiopian Curriculum (100 Units)
           </button>
         </div>
       </div>

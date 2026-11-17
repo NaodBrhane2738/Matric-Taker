@@ -176,9 +176,20 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         {tab === 'login' && (
           <form onSubmit={handleLoginSubmit} className="mt-5 space-y-4">
             <div>
-              <label htmlFor="login-username" className="block text-xs font-medium text-ink-2 mb-1.5">
-                Username
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="login-username" className="block text-xs font-medium text-ink-2">
+                  Username
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUsername('Vixy');
+                  }}
+                  className="text-3xs text-green hover:underline font-medium"
+                >
+                  Use Vixy
+                </button>
+              </div>
               <div className="relative">
                 <User className="absolute left-3 top-2.5 h-3.5 w-3.5 text-ink-3" />
                 <input
@@ -188,7 +199,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   onChange={(e) => setUsername(e.target.value)}
                   aria-describedby={error ? 'auth-error-desc' : undefined}
                   className="w-full rounded-lg border border-line bg-canvas pl-9 pr-3 py-2 text-xs text-ink focus:outline-none focus:ring-1 focus:ring-accent"
-                  placeholder="Enter your username"
+                  placeholder="Vixy"
                   required
                 />
               </div>
@@ -214,7 +225,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             </div>
 
             <p className="text-3xs text-ink-3">
-              Note: Forgotten passwords currently cannot be reset through self-service. Please store credentials safely.
+              Only authorized account <span className="font-semibold text-ink-2">Vixy</span> is configured for this platform.
             </p>
 
             <button

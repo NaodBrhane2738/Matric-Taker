@@ -276,12 +276,12 @@ export default function HomePage() {
                 type="button"
                 onClick={async () => {
                   await restoreOfficialCurriculum();
-                  setToastNotification('Official Ethiopian Secondary Curriculum (116 units) restored!');
+                  setToastNotification('Official Ethiopian Secondary Curriculum (100 units) restored!');
                   setTimeout(() => setToastNotification(null), 3500);
                 }}
                 className="rounded-xl bg-green px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-green-dark transition-colors shadow-xs"
               >
-                Restore 116 Units
+                Restore 100 Units
               </button>
             </div>
           )}

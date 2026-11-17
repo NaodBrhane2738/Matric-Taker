@@ -54,65 +54,119 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(guestUser);
   };
 
-  const loginWithPassword = async (username: string, _pass: string) => {
+  const loginWithPassword = async (username: string, pass: string) => {
     if (!username.trim()) {
       return { success: false, error: 'Username is required' };
     }
-    // Simulate / fetch verified account
-    const registeredUser: UserProfile = {
-      id: `usr_${username.toLowerCase()}`,
-      username,
-      nickname: username,
-      role: username === 'admin' ? 'admin' : 'student',
-      isGuest: false,
-      xp: 150,
-      level: 2,
-      createdAt: new Date().toISOString(),
-    };
+    if (!pass) {
+      return { success: false, error: 'Password is required' };
+    }
 
-    localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(registeredUser));
-    setUser(registeredUser);
-    return { success: true };
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'login',
+          username: username.trim(),
+          password: pass,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        return {
+          success: false,
+          error: data.error || 'Invalid credentials or unauthorized account.',
+        };
+      }
+
+      localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(data.user));
+      setUser(data.user);
+      return { success: true };
+    } catch (err) {
+      console.error('Login request failed', err);
+      return { success: false, error: 'Authentication service is unreachable.' };
+    }
   };
 
-  const registerPermanent = async (username: string, _pass: string, contactEmail?: string) => {
+  const registerPermanent = async (username: string, pass: string, contactEmail?: string) => {
     if (!username.trim()) {
       return { success: false, error: 'Username is required' };
     }
+    if (!pass) {
+      return { success: false, error: 'Password is required' };
+    }
 
-    const newUser: UserProfile = {
-      id: `usr_${username.toLowerCase()}`,
-      username,
-      nickname: username,
-      contactEmail,
-      role: 'student',
-      isGuest: false,
-      xp: 50,
-      level: 1,
-      createdAt: new Date().toISOString(),
-    };
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'register',
+          username: username.trim(),
+          password: pass,
+          contactEmail: contactEmail?.trim() || undefined,
+        }),
+      });
 
-    localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(newUser));
-    setUser(newUser);
-    return { success: true };
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        return {
+          success: false,
+          error: data.error || 'Registration failed. Check your credentials.',
+        };
+      }
+
+      localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(data.user));
+      setUser(data.user);
+      return { success: true };
+    } catch (err) {
+      console.error('Registration request failed', err);
+      return { success: false, error: 'Authentication service is unreachable.' };
+    }
   };
 
-  const convertGuestToPermanent = async (username: string, _pass: string, contactEmail?: string) => {
+  const convertGuestToPermanent = async (username: string, pass: string, contactEmail?: string) => {
     if (!user) {
       return { success: false, error: 'No active guest session found' };
     }
 
-    const updatedUser: UserProfile = {
-      ...user,
-      username,
-      nickname: username,
-      contactEmail,
-      isGuest: false,
-    };
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'convert',
+          username: username.trim(),
+          password: pass,
+          contactEmail: contactEmail?.trim() || undefined,
+          guestId: user.id,
+        }),
+      });
 
-    localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(updatedUser));
-    setUser(updatedUser);
-    return { success: true };
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        return {
+          success: false,
+          error: data.error || 'Conversion failed. Check your credentials.',
+        };
+      }
+
+      const updatedUser: UserProfile = {
+        ...user,
+        ...data.user,
+        id: data.user.id || user.id,
+        isGuest: false,
+      };
+
+      localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      return { success: true };
+    } catch (err) {
+      console.error('Convert account request failed', err);
+      return { success: false, error: 'Authentication service is unreachable.' };
+    }
   };
 
   const logout = () => {

@@ -7,7 +7,7 @@ import * as dotenv from 'dotenv';
 dotenv.config({ path: '../../.env' });
 
 async function bootstrapAdmin() {
-  const username = process.argv[2] || 'admin';
+  const username = process.argv[2] || 'Vixy';
   const secretKey = process.env.ADMIN_BOOTSTRAP_SECRET;
 
   if (!secretKey) {
@@ -33,10 +33,10 @@ async function bootstrapAdmin() {
 
       await db.insert(users).values({
         id: adminId,
-        name: 'Matric Administrator',
+        name: 'Vixy',
         username,
         email: internalEmail,
-        nickname: 'AdminFalcon01',
+        nickname: 'Vixy',
         role: 'admin',
         isGuest: false,
         xp: 1000,
