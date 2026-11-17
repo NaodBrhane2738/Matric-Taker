@@ -48,7 +48,7 @@ export async function POST(req: Request) {
 
     if (!usernameMatch || !passwordMatch) {
       return NextResponse.json(
-        { success: false, error: 'Invalid username or password. Only account Vixy is authorized.' },
+        { success: false, error: 'Invalid username or password' },
         { status: 401 }
       );
     }
