@@ -3,7 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "description": "Comprehensive Ethiopian Grade 12 National Examination preparation and study management platform",
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
   "scripts": {
+    "start": "pnpm --filter web start",
+    "start:local": "pnpm --filter web dev",
     "dev": "pnpm --filter web dev",
     "build": "pnpm --filter \"@matric/*\" build && pnpm --filter web build",
     "test": "pnpm --filter \"@matric/*\" test",

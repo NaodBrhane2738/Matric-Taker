@@ -1,0 +1,13 @@
+node_modules
+.next
+.pnpm-store
+.git
+.env*.local
+Books/
+*.pdf
+dist/
+out/
+build/
+*.tsbuildinfo
+.bilt/
+*.log

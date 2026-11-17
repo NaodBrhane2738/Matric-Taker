@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: matric-tracker
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: pnpm install && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: PNPM_VERSION
+        value: 9.15.4
+      - key: HOSTNAME
+        value: 0.0.0.0
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        value: https://vfxvkrrymlrtrxbctlza.supabase.co
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: BETTER_AUTH_SECRET
+        generateValue: true
+      - key: BETTER_AUTH_URL
+        fromService:
+          type: web
+          name: matric-tracker
+          property: host
+      - key: NEXT_PUBLIC_APP_URL
+        fromService:
+          type: web
+          name: matric-tracker
+          property: host
