@@ -1,0 +1,63 @@
+@import '../formic/styles/tokens.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Scholarly Type Ramp */
+  h1 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+  }
+
+  h3 {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-3);
+}
+
+/* Tabular nums for statistics and metrics */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

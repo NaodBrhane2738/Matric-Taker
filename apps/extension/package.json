@@ -1,0 +1,15 @@
+{
+  "name": "matric-tracker-extension",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cross-browser website blocking extension for Matric Tracker study sessions",
+  "scripts": {
+    "build:chrome": "tsc && node scripts/build.js chrome",
+    "build:firefox": "tsc && node scripts/build.js firefox",
+    "build": "tsc && node scripts/build.js all"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.298",
+    "typescript": "^5.7.2"
+  }
+}

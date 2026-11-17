@@ -1,0 +1,28 @@
+{
+  "name": "@matric/database",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/migrate.ts",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "bootstrap-admin": "tsx src/bootstrap-admin.ts"
+  },
+  "dependencies": {
+    "@matric/shared-types": "workspace:*",
+    "@matric/curriculum-schema": "workspace:*",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.38.4",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.11",
+    "drizzle-kit": "^0.30.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0.0",
+  "curriculum": {
+    "id": "ethiopia-secondary-curriculum-sample",
+    "name": "Ethiopian Secondary Curriculum (Sample Extraction)",
+    "country_code": "ET",
+    "language": "en",
+    "source_documents": [
+      {
+        "id": "g09-chemistry-textbook",
+        "filename": "Chemistry Student Textbook Grade 9.pdf",
+        "grade": 9,
+        "subject_id": "g09-chemistry",
+        "document_type": "textbook"
+      }
+    ],
+    "grades": [
+      {
+        "grade": 9,
+        "subjects": [
+          {
+            "id": "g09-chemistry",
+            "name": "Chemistry",
+            "order": 1,
+            "review_status": "verified",
+            "source_refs": [
+              {
+                "document_id": "g09-chemistry-textbook",
+                "pdf_page_start": 6,
+                "pdf_page_end": 7,
+                "printed_page_label": "Table of Contents"
+              }
+            ],
+            "units": [
+              {
+                "id": "g09-chemistry-u01",
+                "number": "1",
+                "title": "Chemistry and Its Importance",
+                "order": 1,
+                "review_status": "verified",
+                "source_refs": [
+                  {
+                    "document_id": "g09-chemistry-textbook",
+                    "pdf_page_start": 10,
+                    "pdf_page_end": 35
+                  }
+                ],
+                "chapters": [
+                  {
+                    "id": "g09-chemistry-u01-c01",
+                    "number": "1.1",
+                    "title": "Definition and Scope of Chemistry",
+                    "order": 1,
+                    "review_status": "verified",
+                    "source_refs": [
+                      {
+                        "document_id": "g09-chemistry-textbook",
+                        "pdf_page_start": 10,
+                        "pdf_page_end": 16
+                      }
+                    ],
+                    "prerequisite_ids": [],
+                    "subtopics": [
+                      {
+                        "id": "g09-chemistry-u01-c01-s01",
+                        "number": "1.1.1",
+                        "title": "What is Chemistry?",
+                        "order": 1,
+                        "review_status": "verified",
+                        "source_refs": []
+                      },
+                      {
+                        "id": "g09-chemistry-u01-c01-s02",
+                        "number": "1.1.2",
+                        "title": "Branches of Chemistry",
+                        "order": 2,
+                        "review_status": "verified",
+                        "source_refs": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "g09-chemistry-u01-c02",
+                    "number": "1.2",
+                    "title": "Relationship between Chemistry and Other Natural Sciences",
+                    "order": 2,
+                    "review_status": "verified",
+                    "source_refs": [
+                      {
+                        "document_id": "g09-chemistry-textbook",
+                        "pdf_page_start": 17,
+                        "pdf_page_end": 22
+                      }
+                    ],
+                    "prerequisite_ids": ["g09-chemistry-u01-c01"],
+                    "subtopics": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

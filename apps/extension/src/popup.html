@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Matric Tracker Blocker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 320px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #ffffff;
+      color: #0f172a;
+      padding: 16px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+    }
+    .logo-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 9999px;
+    }
+    .status-active {
+      background-color: #dcfce7;
+      color: #15803d;
+    }
+    .status-paused {
+      background-color: #fef3c7;
+      color: #d97706;
+    }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .toggle-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #334155;
+    }
+    .btn {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      margin-bottom: 8px;
+      transition: all 0.15s ease;
+    }
+    .btn:hover {
+      background: #f1f5f9;
+    }
+    .btn-emergency {
+      border-color: #fcd34d;
+      background-color: #fffbeb;
+      color: #b45309;
+    }
+    .btn-emergency:hover {
+      background-color: #fef3c7;
+    }
+    .domain-list {
+      max-height: 120px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 11px;
+      margin-bottom: 10px;
+      background: #f8fafc;
+    }
+    .domain-item {
+      padding: 3px 0;
+      color: #475569;
+      display: flex;
+      justify-content: space-between;
+    }
+    .add-form {
+      display: flex;
+      gap: 6px;
+    }
+    .input {
+      flex: 1;
+      padding: 6px 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 11px;
+    }
+    .input:focus {
+      outline: none;
+      border-color: #15803d;
+    }
+    .btn-add {
+      background: #15803d;
+      color: #ffffff;
+      border: none;
+      padding: 0 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo-title">
+      <span>Matric Tracker</span>
+    </div>
+    <div id="statusBadge" class="status-badge status-active">Active</div>
+  </div>
+
+  <div class="toggle-row">
+    <span class="toggle-label">Website Blocking</span>
+    <input type="checkbox" id="blockToggle" checked />
+  </div>
+
+  <button id="btnEmergency" class="btn btn-emergency">Emergency Pause (10 mins)</button>
+
+  <div style="font-size: 11px; font-weight: 600; margin-bottom: 4px; color: #475569;">
+    Restricted Domains
+  </div>
+  <div id="domainList" class="domain-list"></div>
+
+  <form id="addForm" class="add-form">
+    <input type="text" id="domainInput" class="input" placeholder="e.g. reddit.com" required />
+    <button type="submit" class="btn-add">Add</button>
+  </form>
+
+  <script src="popup.js"></script>
+</body>
+</html>
