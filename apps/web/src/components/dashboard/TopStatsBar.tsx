@@ -8,6 +8,8 @@ interface TopStatsBarProps {
   completedUnits: number;
   remainingUnits: number;
   overallProgress: number;
+  totalChapters?: number;
+  completedChapters?: number;
 }
 
 export function TopStatsBar({
@@ -15,6 +17,8 @@ export function TopStatsBar({
   completedUnits,
   remainingUnits,
   overallProgress,
+  totalChapters,
+  completedChapters,
 }: TopStatsBarProps) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -70,7 +74,9 @@ export function TopStatsBar({
           />
         </div>
         <p className="mt-2 text-xs text-ink-3 tabular-nums">
-          {completedUnits} of {totalUnits} units completed
+          {completedChapters !== undefined && totalChapters !== undefined
+            ? `${completedChapters} of ${totalChapters} chapters (${completedUnits} units)`
+            : `${completedUnits} of ${totalUnits} units completed`}
         </p>
       </div>
     </div>

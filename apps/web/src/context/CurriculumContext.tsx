@@ -41,6 +41,8 @@ interface CurriculumContextType {
   totalUnitsCount: number;
   completedUnitsCount: number;
   remainingUnitsCount: number;
+  totalChaptersCount: number;
+  completedChaptersCount: number;
   overallProgressPercentage: number;
   // Study session scheduling & management
   studySessions: StudySession[];
@@ -154,9 +156,11 @@ export function CurriculumProvider({ children }: { children: React.ReactNode }) 
     setProgressMap({});
   };
 
-  // Compute unit metrics dynamically from current progress
+  // Compute unit and chapter metrics dynamically from current progress
   let totalUnitsCount = 0;
   let completedUnitsCount = 0;
+  let totalChaptersCount = 0;
+  let completedChaptersCount = 0;
 
   if (curriculum) {
     const grades = curriculum.curriculum ? curriculum.curriculum.grades : (curriculum as any).grades || [];
@@ -164,14 +168,21 @@ export function CurriculumProvider({ children }: { children: React.ReactNode }) 
       for (const s of g.subjects) {
         for (const u of s.units) {
           totalUnitsCount++;
+          const unitChapters = u.chapters || [];
+          let unitChaptersDone = 0;
+
+          for (const c of unitChapters) {
+            totalChaptersCount++;
+            const status = progressMap[c.id]?.status;
+            if (status === 'studied' || status === 'practicing' || status === 'mastered') {
+              completedChaptersCount++;
+              unitChaptersDone++;
+            }
+          }
+
           // A unit is completed if all its chapters are studied/mastered
-          const unitChapters = u.chapters;
           const isComplete =
-            unitChapters.length > 0 &&
-            unitChapters.every((c: any) => {
-              const status = progressMap[c.id]?.status;
-              return status === 'studied' || status === 'practicing' || status === 'mastered';
-            });
+            unitChapters.length > 0 && unitChaptersDone === unitChapters.length;
           if (isComplete) {
             completedUnitsCount++;
           }
@@ -184,8 +195,22 @@ export function CurriculumProvider({ children }: { children: React.ReactNode }) 
   const displayTotalUnits = totalUnitsCount;
   const displayCompletedUnits = completedUnitsCount;
   const remainingUnitsCount = Math.max(0, displayTotalUnits - displayCompletedUnits);
+
+  // Individual subtopics/chapters completed add up directly to the percentage!
+  const rawProgressPercentage =
+    totalChaptersCount > 0
+      ? (completedChaptersCount / totalChaptersCount) * 100
+      : displayTotalUnits > 0
+      ? (displayCompletedUnits / displayTotalUnits) * 100
+      : 0;
+
+  // For high precision when starting out, show 1 decimal place if below 1%
   const overallProgressPercentage =
-    displayTotalUnits > 0 ? Math.round((displayCompletedUnits / displayTotalUnits) * 100) : 0;
+    completedChaptersCount === 0
+      ? 0
+      : rawProgressPercentage < 1
+      ? Number(rawProgressPercentage.toFixed(1))
+      : Math.round(rawProgressPercentage);
 
   // Compute performance dimensions
   const allChaptersList: Chapter[] = [];
@@ -461,6 +486,8 @@ export function CurriculumProvider({ children }: { children: React.ReactNode }) 
         totalUnitsCount: displayTotalUnits,
         completedUnitsCount: displayCompletedUnits,
         remainingUnitsCount,
+        totalChaptersCount,
+        completedChaptersCount,
         overallProgressPercentage,
         studySessions,
         scheduleSession,

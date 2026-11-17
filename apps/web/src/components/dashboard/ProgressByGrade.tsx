@@ -65,21 +65,41 @@ export function ProgressByGrade({
 
     let unitsTotal = 0;
     let unitsDone = 0;
+    let chaptersTotal = 0;
+    let chaptersDone = 0;
 
     for (const s of gObj.subjects) {
       unitsTotal += s.units.length;
       for (const u of s.units) {
-        const isUnitDone =
-          u.chapters.length > 0 &&
-          u.chapters.every((c: any) => {
-            const st = progressMap[c.id]?.status;
-            return st === 'studied' || st === 'mastered';
-          });
-        if (isUnitDone) unitsDone++;
+        let unitChaptersDone = 0;
+        const uChapters = u.chapters || [];
+        for (const c of uChapters) {
+          chaptersTotal++;
+          const st = progressMap[c.id]?.status;
+          if (st === 'studied' || st === 'mastered' || st === 'practicing') {
+            chaptersDone++;
+            unitChaptersDone++;
+          }
+        }
+        if (uChapters.length > 0 && unitChaptersDone === uChapters.length) {
+          unitsDone++;
+        }
       }
     }
 
-    const pct = unitsTotal > 0 ? Math.round((unitsDone / unitsTotal) * 100) : 0;
+    const rawPct =
+      chaptersTotal > 0
+        ? (chaptersDone / chaptersTotal) * 100
+        : unitsTotal > 0
+        ? (unitsDone / unitsTotal) * 100
+        : 0;
+
+    const pct =
+      chaptersDone === 0
+        ? 0
+        : rawPct < 1
+        ? Number(rawPct.toFixed(1))
+        : Math.round(rawPct);
 
     return {
       grade: gNum,
@@ -87,6 +107,8 @@ export function ProgressByGrade({
       unitsCount: unitsTotal,
       completedCount: unitsDone,
       remainingCount: Math.max(0, unitsTotal - unitsDone),
+      chaptersTotal,
+      chaptersDone,
       pct,
     };
   });
@@ -127,13 +149,15 @@ export function ProgressByGrade({
               <div className="flex items-center justify-between text-xs text-ink-2 mb-1.5">
                 <span className="font-medium text-ink">{c.pct}% complete</span>
                 <span className="tabular-nums text-ink-3">
-                  {c.completedCount}/{c.unitsCount}
+                  {c.chaptersDone !== undefined && c.chaptersTotal !== undefined
+                    ? `${c.chaptersDone}/${c.chaptersTotal} ch.`
+                    : `${c.completedCount}/${c.unitsCount}`}
                 </span>
               </div>
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
                 <div
                   className="h-full bg-green rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${c.pct}%` }}
+                  style={{ width: `${Math.min(100, Math.max(0, c.pct))}%` }}
                 />
               </div>
             </div>
@@ -141,9 +165,9 @@ export function ProgressByGrade({
             <div className="mt-3.5 flex items-center justify-between border-t border-line/60 pt-3 text-3xs text-ink-3">
               <span className="flex items-center gap-1">
                 <span className="h-1.5 w-1.5 rounded-full bg-green" />
-                {c.completedCount} completed
+                {c.completedCount} units ({c.chaptersDone || 0} chapters)
               </span>
-              <span>{c.remainingCount} remaining</span>
+              <span>{c.remainingCount} units left</span>
             </div>
           </button>
         ))}

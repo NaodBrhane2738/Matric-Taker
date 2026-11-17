@@ -100,7 +100,7 @@ export function AllUnitsView({
                 u.chapters.length > 0 &&
                 u.chapters.every((c) => {
                   const st = progressMap[c.id]?.status;
-                  return st === 'studied' || st === 'mastered';
+                  return st === 'studied' || st === 'mastered' || st === 'practicing';
                 });
 
               if (filterMode === 'completed') return isUnitCompleted;
@@ -251,12 +251,13 @@ export function AllUnitsView({
                     {/* Units & Chapters List */}
                     <div className="divide-y divide-line/40">
                       {subj.units.map((unit, uIdx) => {
-                        const isUnitCompleted =
-                          unit.chapters.length > 0 &&
-                          unit.chapters.every((c) => {
-                            const st = progressMap[c.id]?.status;
-                            return st === 'studied' || st === 'mastered';
-                          });
+                        const unitChapters = unit.chapters || [];
+                        const completedChaptersInUnit = unitChapters.filter((c) => {
+                          const st = progressMap[c.id]?.status;
+                          return st === 'studied' || st === 'mastered' || st === 'practicing';
+                        }).length;
+                        const isUnitCompleted = unitChapters.length > 0 && completedChaptersInUnit === unitChapters.length;
+                        const isUnitInProgress = completedChaptersInUnit > 0 && !isUnitCompleted;
 
                         const isUnitExpanded =
                           expandedUnits[unit.id] !== undefined
@@ -300,11 +301,19 @@ export function AllUnitsView({
 
                               <div className="flex items-center gap-3 shrink-0">
                                 <span
-                                  className={`text-3xs font-medium ${
-                                    isUnitCompleted ? 'text-green' : 'text-ink-3'
+                                  className={`text-3xs font-medium px-2 py-0.5 rounded-full ${
+                                    isUnitCompleted
+                                      ? 'bg-green/10 text-green font-semibold'
+                                      : isUnitInProgress
+                                      ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-medium'
+                                      : 'text-ink-3'
                                   }`}
                                 >
-                                  {isUnitCompleted ? 'Completed' : 'Not started'}
+                                  {isUnitCompleted
+                                    ? `Completed (${completedChaptersInUnit}/${unitChapters.length})`
+                                    : isUnitInProgress
+                                    ? `In progress (${completedChaptersInUnit}/${unitChapters.length})`
+                                    : `Not started (0/${unitChapters.length})`}
                                 </span>
 
                                 {onRenameUnit && (

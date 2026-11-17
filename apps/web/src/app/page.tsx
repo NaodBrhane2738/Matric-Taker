@@ -71,6 +71,8 @@ export default function HomePage() {
     totalUnitsCount,
     completedUnitsCount,
     remainingUnitsCount,
+    totalChaptersCount,
+    completedChaptersCount,
     overallProgressPercentage,
     toggleUnitProgress,
     updateChapterStatus,
@@ -144,6 +146,7 @@ export default function HomePage() {
         completedUnits={completedUnitsCount}
         mobileOpen={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
+        onOpenAuth={() => setIsAuthModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -294,6 +297,8 @@ export default function HomePage() {
                 totalUnits={totalUnitsCount}
                 completedUnits={completedUnitsCount}
                 remainingUnits={remainingUnitsCount}
+                totalChapters={totalChaptersCount}
+                completedChapters={completedChaptersCount}
                 overallProgress={overallProgressPercentage}
               />
 

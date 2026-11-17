@@ -21,6 +21,8 @@ import {
   Globe,
   Settings,
   X,
+  LogIn,
+  ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { usePreferences } from '../../context/PreferencesContext';
@@ -32,6 +34,7 @@ interface SidebarProps {
   completedUnits: number;
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
+  onOpenAuth?: () => void;
 }
 
 export function Sidebar({
@@ -41,6 +44,7 @@ export function Sidebar({
   completedUnits,
   mobileOpen = false,
   onCloseMobile,
+  onOpenAuth,
 }: SidebarProps) {
   const { user, logout } = useAuth();
   const {
@@ -232,31 +236,48 @@ export function Sidebar({
           </p>
         </div>
 
-        {/* User Account Row */}
-        <div className="flex items-center justify-between rounded-xl bg-canvas p-2.5 border border-line">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-2 text-xs font-semibold text-ink">
-              {user?.nickname?.[0] || 'S'}
+        {/* User Account / Sign In Row */}
+        {user ? (
+          <div className="flex items-center justify-between rounded-xl bg-canvas p-2.5 border border-line">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-2 text-xs font-semibold text-ink">
+                {user.nickname?.[0] || 'S'}
+              </div>
+              <div className="truncate">
+                <div className="text-xs font-medium text-ink truncate">
+                  {user.nickname || user.username}
+                </div>
+                <div className="text-3xs text-ink-3 truncate">
+                  {user.isGuest ? 'Guest profile' : 'Permanent account'}
+                </div>
+              </div>
             </div>
-            <div className="truncate">
-              <div className="text-xs font-medium text-ink truncate">
-                {user?.nickname || 'Student'}
-              </div>
-              <div className="text-3xs text-ink-3 truncate">
-                {user?.isGuest ? 'Guest profile' : 'Permanent account'}
-              </div>
+
+            <button
+              type="button"
+              onClick={logout}
+              className="text-ink-3 hover:text-red-500 transition-colors p-1"
+              title="Sign out"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        ) : (
+          <div className="rounded-xl border border-line bg-canvas/60 p-2.5 space-y-2">
+            <button
+              type="button"
+              onClick={onOpenAuth}
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-green px-3 py-2 text-xs font-medium text-white hover:bg-green-dark transition-colors shadow-xs"
+            >
+              <LogIn className="h-3.5 w-3.5" />
+              <span>Sign in / Register</span>
+            </button>
+            <div className="flex items-center justify-center gap-1.5 text-3xs text-ink-3 pt-0.5">
+              <ShieldCheck className="h-3 w-3 text-green" />
+              <span>&quot;I&apos;m not a robot&quot; protected</span>
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={logout}
-            className="text-ink-3 hover:text-red-500 transition-colors p-1"
-            title="Sign out"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-          </button>
-        </div>
+        )}
       </div>
     </div>
   );

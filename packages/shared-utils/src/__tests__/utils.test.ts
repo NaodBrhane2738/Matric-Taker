@@ -11,7 +11,7 @@ import {
   identifyWeakChapters,
 } from '../mastery';
 import { generateSmartStudySchedule, calculateNextRevisionDate } from '../scheduler';
-import { generateGuestNickname, generateInternalEmail } from '../nickname';
+import { generateGuestNickname, generateInternalEmail, generateSuperheroNickname, ALL_SUPERHEROES } from '../nickname';
 import type { StudentChapterProgress } from '@matric/shared-types';
 
 describe('Ethiopian Calendar Conversion', () => {
@@ -150,5 +150,16 @@ describe('Guest Nickname & Email Generation', () => {
 
     const email = generateInternalEmail('guest-1234');
     expect(email).toBe('account-guest-1234@internal.matric.invalid');
+  });
+
+  it('generates valid Marvel and DC superhero nicknames including main and side characters', () => {
+    const heroNick = generateSuperheroNickname();
+    expect(heroNick).toMatch(/^[A-Za-z0-9]+$/);
+    expect(ALL_SUPERHEROES.length).toBeGreaterThan(50);
+    // Ensure both Marvel stars & side characters, and DC stars & side characters are present
+    expect(ALL_SUPERHEROES).toContain('SpiderMan');
+    expect(ALL_SUPERHEROES).toContain('Wong');
+    expect(ALL_SUPERHEROES).toContain('Batman');
+    expect(ALL_SUPERHEROES).toContain('AlfredPennyworth');
   });
 });

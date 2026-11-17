@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import type { UserProfile } from '@matric/shared-types';
+import {
+  registerNewUser,
+  authenticateUser,
+  findUserByUsername,
+} from '../../../../lib/server/users';
 
-// Pre-computed SHA-256 hash fallback so authentication works on hosting platforms (e.g. Render)
-// without hardcoding plaintext credentials in source code or client bundles.
+// Pre-computed SHA-256 hash fallback for default administrative bootstrap
 const FALLBACK_ACCOUNT_HASH = 'd2bc50efea3467896011574e8306b4e532d114732b1dbab9543e1f5231e2906d';
 
-function verifyPassword(inputPassword: string, envPassword?: string): boolean {
+function verifyAdminPassword(inputPassword: string, envPassword?: string): boolean {
   if (!inputPassword) return false;
 
   const inputHash = crypto.createHash('sha256').update(inputPassword).digest();
@@ -24,7 +28,7 @@ function verifyPassword(inputPassword: string, envPassword?: string): boolean {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { username, password, action = 'login', contactEmail } = body;
+    const { username, password, action = 'login', contactEmail, guestId } = body;
 
     if (!username || typeof username !== 'string' || !username.trim()) {
       return NextResponse.json(
@@ -40,36 +44,72 @@ export async function POST(req: Request) {
       );
     }
 
-    const expectedUsername = process.env.VIXY_ACCOUNT_USERNAME || 'Vixy';
-    const envPassword = process.env.VIXY_ACCOUNT_PASSWORD;
+    const cleanUsername = username.trim();
+    const expectedAdminUsername = process.env.VIXY_ACCOUNT_USERNAME || 'Vixy';
+    const envAdminPassword = process.env.VIXY_ACCOUNT_PASSWORD;
 
-    const usernameMatch = username.trim().toLowerCase() === expectedUsername.toLowerCase();
-    const passwordMatch = verifyPassword(password, envPassword);
+    // 1. Registration & Guest Profile Conversion
+    if (action === 'register' || action === 'convert') {
+      const regResult = registerNewUser({
+        username: cleanUsername,
+        password,
+        contactEmail: typeof contactEmail === 'string' && contactEmail.trim() ? contactEmail.trim() : undefined,
+        role: 'student',
+        guestId: typeof guestId === 'string' ? guestId : undefined,
+      });
 
-    if (!usernameMatch || !passwordMatch) {
+      if (!regResult.success) {
+        return NextResponse.json(
+          { success: false, error: regResult.error || 'Registration failed' },
+          { status: 400 }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: action === 'convert' ? 'Guest profile converted successfully' : 'Account registered successfully',
+        user: regResult.user,
+      });
+    }
+
+    // 2. Login Flow
+    // A. Check for built-in Administrator account (Vixy)
+    if (
+      cleanUsername.toLowerCase() === expectedAdminUsername.toLowerCase() &&
+      verifyAdminPassword(password, envAdminPassword)
+    ) {
+      const adminProfile: UserProfile = {
+        id: 'usr_vixy',
+        username: expectedAdminUsername,
+        nickname: expectedAdminUsername,
+        contactEmail: typeof contactEmail === 'string' && contactEmail.trim() ? contactEmail.trim() : undefined,
+        role: 'admin',
+        isGuest: false,
+        xp: 500,
+        level: 5,
+        createdAt: new Date().toISOString(),
+      };
+
+      return NextResponse.json({
+        success: true,
+        message: 'Admin login successful',
+        user: adminProfile,
+      });
+    }
+
+    // B. Authenticate registered user
+    const authResult = authenticateUser(cleanUsername, password);
+    if (!authResult.success) {
       return NextResponse.json(
-        { success: false, error: 'Invalid username or password' },
+        { success: false, error: authResult.error || 'Invalid username or password' },
         { status: 401 }
       );
     }
 
-    // Single authorized account profile
-    const userProfile: UserProfile = {
-      id: 'usr_vixy',
-      username: expectedUsername,
-      nickname: expectedUsername,
-      contactEmail: typeof contactEmail === 'string' && contactEmail.trim() ? contactEmail.trim() : undefined,
-      role: 'admin',
-      isGuest: false,
-      xp: 500,
-      level: 5,
-      createdAt: new Date().toISOString(),
-    };
-
     return NextResponse.json({
       success: true,
-      message: action === 'register' ? 'Account registered successfully' : 'Login successful',
-      user: userProfile,
+      message: 'Login successful',
+      user: authResult.user,
     });
   } catch (error) {
     console.error('[Auth API] Unexpected error during authentication:', error);

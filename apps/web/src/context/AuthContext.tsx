@@ -2,12 +2,12 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { UserProfile } from '@matric/shared-types';
-import { generateGuestNickname } from '@matric/shared-utils';
+import { generateGuestNickname, generateSuperheroNickname } from '@matric/shared-utils';
 
 interface AuthContextType {
   user: UserProfile | null;
   isLoading: boolean;
-  loginAsGuest: () => Promise<void>;
+  loginAsGuest: (customNickname?: string) => Promise<void>;
   loginWithPassword: (username: string, pass: string) => Promise<{ success: boolean; error?: string }>;
   registerPermanent: (username: string, pass: string, contactEmail?: string) => Promise<{ success: boolean; error?: string }>;
   convertGuestToPermanent: (username: string, pass: string, contactEmail?: string) => Promise<{ success: boolean; error?: string }>;
@@ -36,9 +36,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const loginAsGuest = async () => {
+  const loginAsGuest = async (customNickname?: string) => {
     const guestId = `guest_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    const nickname = generateGuestNickname();
+    const nickname = customNickname?.trim() || generateSuperheroNickname();
     const guestUser: UserProfile = {
       id: guestId,
       username: guestId,
