@@ -83,7 +83,7 @@ export function Sidebar({
   };
 
   const sidebarContent = (
-    <div className="w-64 flex flex-col justify-between border-r border-line bg-surface h-screen sticky top-0 p-4 select-none overflow-y-auto">
+    <div className="w-64 3xl:w-80 flex flex-col justify-between border-r border-line bg-surface h-screen sticky top-0 p-4 3xl:p-6 select-none overflow-y-auto">
       <div className="space-y-6">
         {/* Brand Header */}
         <div className="flex items-center justify-between px-1 pt-1">

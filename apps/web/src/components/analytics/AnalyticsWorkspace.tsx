@@ -61,7 +61,7 @@ export function AnalyticsWorkspace() {
       <StudyActivityHeatmap activityData={realActivityData} hasDemoData={isDemoMode} />
 
       {/* 3 Separate Performance Dimensions */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 3xl:gap-6">
         {/* 1. Curriculum Coverage */}
         <div className="rounded-2xl border border-line bg-surface p-5 space-y-3">
           <div className="flex items-center justify-between text-ink-3">

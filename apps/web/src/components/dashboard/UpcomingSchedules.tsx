@@ -35,8 +35,8 @@ export function UpcomingSchedules({
   onDeleteSession,
 }: UpcomingSchedulesProps) {
   return (
-    <div className="rounded-2xl border border-line bg-surface p-5 shadow-xs">
-      <div className="flex items-center justify-between pb-3.5 border-b border-line/60">
+    <div className="rounded-2xl border border-line bg-surface p-4 sm:p-5 3xl:p-6 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 border-b border-line/60 gap-3">
         <div>
           <h2 className="text-sm font-semibold text-ink flex items-center gap-2">
             <Calendar className="h-4 w-4 text-green" />
@@ -52,7 +52,7 @@ export function UpcomingSchedules({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto">
           {onOpenScheduleModal && (
             <button
               type="button"
@@ -109,7 +109,7 @@ export function UpcomingSchedules({
           )}
         </div>
       ) : (
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3.5">
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-3.5 3xl:gap-5">
           {sessions.slice(0, 6).map((s) => {
             const startDate = s.startTime ? new Date(s.startTime) : new Date();
             const dateStr = !isNaN(startDate.getTime())

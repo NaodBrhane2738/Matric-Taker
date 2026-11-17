@@ -123,13 +123,13 @@ export function ProgressByGrade({
         <span className="text-xs font-medium text-ink-3">4 grades</span>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 xs:gap-4 sm:grid-cols-2 lg:grid-cols-4 3xl:gap-6">
         {cards.map((c) => (
           <button
             type="button"
             key={c.grade}
             onClick={() => onSelectGrade?.(c.grade)}
-            className="group relative text-left cursor-pointer rounded-2xl border border-line bg-surface p-5 transition-all hover:border-line-strong hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
+            className="group relative text-left cursor-pointer rounded-2xl border border-line bg-surface p-4 sm:p-5 3xl:p-6 transition-all hover:border-line-strong hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
           >
             <div className="flex items-center justify-between">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-2 text-ink-2">

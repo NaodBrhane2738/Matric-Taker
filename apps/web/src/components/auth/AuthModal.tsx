@@ -144,9 +144,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="auth-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-3 xs:p-4 overflow-y-auto"
     >
-      <div className="relative w-full max-w-md rounded-2xl bg-surface p-6 shadow-xl border border-line">
+      <div className="relative w-full max-w-md rounded-2xl bg-surface p-4 sm:p-6 shadow-xl border border-line max-h-[92vh] overflow-y-auto my-auto">
         <button
           type="button"
           onClick={onClose}
@@ -232,18 +232,18 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         {/* 1. Guest Access with Randomize Superhero Nickname */}
         {tab === 'guest' && (
           <div className="mt-5 space-y-4">
-            {/* Superhero Guest Profile Preview */}
+            {/* Guest Profile Preview */}
             <div className="rounded-xl border border-line bg-canvas p-3.5 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs font-semibold text-ink">
                   <Sparkles className="h-4 w-4 text-green" />
-                  <span>Your Superhero Guest Handle</span>
+                  <span>Your Guest Nickname</span>
                 </div>
                 <button
                   type="button"
                   onClick={handleRandomizeGuest}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 py-1 text-2xs font-semibold text-ink hover:text-green hover:bg-surface-2 transition-colors shadow-2xs"
-                  title="Roll another Marvel/DC superhero nickname"
+                  title="Randomize nickname"
                 >
                   <Dices className="h-3.5 w-3.5 text-accent" />
                   <span>Randomize</span>
@@ -254,13 +254,10 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 <span className="font-mono text-xs font-bold text-ink tracking-wide">
                   {guestNickname}
                 </span>
-                <span className="rounded-md bg-green/10 px-2 py-0.5 text-3xs font-semibold text-green">
-                  Marvel & DC Universe
-                </span>
               </div>
 
               <p className="text-3xs text-ink-3 leading-relaxed">
-                Roll superhero characters and sidekicks across the MCU and DC universe, or click randomize to find your favorite moniker.
+                Click randomize to roll a unique moniker or keep this handle to track your study progress.
               </p>
             </div>
 
@@ -358,10 +355,10 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   type="button"
                   onClick={handleRandomizeRegister}
                   className="inline-flex items-center gap-1 text-2xs font-semibold text-green hover:text-green-dark transition-colors"
-                  title="Generate a Marvel or DC superhero/character nickname"
+                  title="Generate a random nickname"
                 >
                   <Dices className="h-3 w-3" />
-                  <span>Randomize Superhero Handle</span>
+                  <span>Randomize Handle</span>
                 </button>
               </div>
 
@@ -381,15 +378,12 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   type="button"
                   onClick={handleRandomizeRegister}
                   className="absolute right-1.5 top-1.5 rounded-md px-2 py-1 text-3xs font-semibold bg-surface-2 hover:bg-surface text-ink-2 hover:text-ink border border-line transition-colors flex items-center gap-1"
-                  title="Randomize Marvel / DC nickname"
+                  title="Roll nickname"
                 >
                   <Dices className="h-3 w-3 text-accent" />
                   <span>Roll</span>
                 </button>
               </div>
-              <p className="mt-1 text-3xs text-ink-3">
-                Tip: Click Randomize or Roll for cool Marvel (MCU) &amp; DC character nicknames.
-              </p>
             </div>
 
             <div>

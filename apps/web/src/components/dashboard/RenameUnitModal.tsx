@@ -49,9 +49,9 @@ export function RenameUnitModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="rename-unit-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-3 xs:p-4 overflow-y-auto"
     >
-      <div className="relative w-full max-w-lg rounded-2xl bg-surface p-6 shadow-xl border border-line animate-in fade-in zoom-in-95 duration-150">
+      <div className="relative w-full max-w-lg rounded-2xl bg-surface p-4 sm:p-6 shadow-xl border border-line animate-in fade-in zoom-in-95 duration-150 my-auto max-h-[92vh] overflow-y-auto">
         <button
           type="button"
           onClick={onClose}

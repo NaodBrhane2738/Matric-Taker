@@ -138,14 +138,14 @@ export function AllUnitsView({
         </div>
 
         {/* Filter Controls */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
           {/* Grade filter */}
           <select
             value={selectedGrade}
             onChange={(e) =>
               setSelectedGrade(e.target.value === 'all' ? 'all' : Number(e.target.value))
             }
-            className="rounded-xl border border-line bg-surface px-3 py-1.5 text-xs text-ink focus:outline-none focus:ring-1 focus:ring-accent"
+            className="rounded-xl border border-line bg-surface px-3 py-1.5 text-xs text-ink focus:outline-none focus:ring-1 focus:ring-accent flex-1 sm:flex-initial"
           >
             <option value="all">All Grades</option>
             <option value={9}>Grade 9</option>
@@ -155,7 +155,7 @@ export function AllUnitsView({
           </select>
 
           {/* Search bar */}
-          <div className="relative min-w-[200px]">
+          <div className="relative w-full sm:w-auto flex-1 sm:min-w-[200px] 3xl:min-w-[300px]">
             <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-ink-3" />
             <input
               type="text"

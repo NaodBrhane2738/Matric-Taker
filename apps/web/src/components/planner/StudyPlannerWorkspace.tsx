@@ -301,7 +301,7 @@ export function StudyPlannerWorkspace({ onStartFocusSession }: StudyPlannerWorks
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 3xl:gap-5">
             {studySessions.map((sess) => {
               const startDate = sess.startTime ? new Date(sess.startTime) : new Date();
               const dateStr = !isNaN(startDate.getTime())

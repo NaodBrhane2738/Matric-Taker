@@ -152,8 +152,8 @@ export default function HomePage() {
       {/* Main Content Area */}
       <main className="flex-1 min-w-0 min-h-screen overflow-y-auto">
         {/* Top Minimal Bar */}
-        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-line bg-surface/80 px-6 backdrop-blur-md">
-          <div className="flex items-center gap-3">
+        <header className="sticky top-0 z-40 flex h-14 3xl:h-18 items-center justify-between border-b border-line bg-surface/80 px-4 sm:px-6 3xl:px-12 backdrop-blur-md">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
@@ -162,17 +162,17 @@ export default function HomePage() {
             >
               <Menu className="h-4 w-4" />
             </button>
-            <span className="text-xs font-semibold uppercase tracking-wider text-ink-3">
+            <span className="text-xs 3xl:text-sm font-semibold uppercase tracking-wider text-ink-3">
               {activeTab.replace('_', ' ')}
             </span>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5">
             {/* Quick Action: Schedule Study */}
             <button
               type="button"
               onClick={() => setIsScheduleStudyModalOpen(true)}
-              className="hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-green/10 text-green border border-green/20 px-3 py-1 text-2xs font-semibold hover:bg-green/20 transition-colors shadow-2xs"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-green/10 text-green border border-green/20 px-3 py-1 text-2xs 3xl:text-xs font-semibold hover:bg-green/20 transition-colors shadow-2xs"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Schedule</span>
@@ -186,7 +186,7 @@ export default function HomePage() {
                 setToastNotification('Curriculum progress reset: all checkmarks cleared (0% clean slate).');
                 setTimeout(() => setToastNotification(null), 3500);
               }}
-              className="inline-flex items-center gap-1 rounded-xl border border-line bg-surface px-2.5 py-1 text-2xs font-semibold text-ink-3 hover:text-ink hover:bg-surface-2 transition-colors shadow-2xs"
+              className="hidden xs:inline-flex items-center gap-1 rounded-xl border border-line bg-surface px-2.5 py-1 text-2xs 3xl:text-xs font-semibold text-ink-3 hover:text-ink hover:bg-surface-2 transition-colors shadow-2xs"
               title="Reset all studied chapters to 0%"
             >
               <RefreshCw className="h-3 w-3" />
@@ -209,9 +209,9 @@ export default function HomePage() {
             </button>
 
             {/* Offline / Cloud Status */}
-            <div className="flex items-center gap-1.5 text-2xs text-ink-3">
+            <div className="hidden sm:flex items-center gap-1.5 text-2xs 3xl:text-xs text-ink-3">
               <Cloud className="h-3.5 w-3.5 text-green" />
-              <span className="hidden sm:inline">Offline-Ready</span>
+              <span>Offline-Ready</span>
             </div>
 
             {/* User status & Auth button */}
@@ -245,7 +245,7 @@ export default function HomePage() {
         </header>
 
         {/* Dynamic Workspace Container */}
-        <div className="p-6 sm:p-8 max-w-6xl mx-auto space-y-8">
+        <div className="p-3.5 xs:p-4 sm:p-6 md:p-8 2xl:p-10 3xl:p-14 max-w-6xl 2xl:max-w-7xl 3xl:max-w-[1920px] tv:max-w-[2400px] mx-auto space-y-6 sm:space-y-8 3xl:space-y-12">
           {/* Action Feedback Banner */}
           {toastNotification && (
             <div className="rounded-xl border border-green/30 bg-green/10 px-4 py-2.5 text-xs text-green font-medium animate-in fade-in flex items-center justify-between shadow-xs">

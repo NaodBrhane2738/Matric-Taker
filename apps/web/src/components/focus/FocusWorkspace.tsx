@@ -291,15 +291,15 @@ export function FocusWorkspace() {
       )}
 
       {/* Big Scholarly Timer Display */}
-      <div className="flex flex-col items-center justify-center rounded-3xl border border-line bg-surface p-10 shadow-xs max-w-2xl mx-auto text-center space-y-6">
+      <div className="flex flex-col items-center justify-center rounded-3xl border border-line bg-surface p-6 sm:p-10 3xl:p-16 shadow-xs max-w-2xl 3xl:max-w-4xl mx-auto text-center space-y-6">
         {/* Subject Label */}
-        <div className="rounded-full bg-surface-2 px-4 py-1 text-xs text-ink font-medium border border-line/50">
+        <div className="rounded-full bg-surface-2 px-3 sm:px-4 py-1 text-2xs sm:text-xs text-ink font-medium border border-line/50 max-w-full truncate">
           Target: {selectedSubject}
         </div>
 
         {/* Big Countdown */}
         <div className="relative flex items-center justify-center">
-          <span className="font-mono text-7xl font-bold tracking-tight text-ink tabular-nums sm:text-8xl">
+          <span className="font-mono text-5xl xs:text-6xl sm:text-7xl lg:text-8xl 3xl:text-9xl font-bold tracking-tight text-ink tabular-nums">
             {timeFormatted}
           </span>
         </div>

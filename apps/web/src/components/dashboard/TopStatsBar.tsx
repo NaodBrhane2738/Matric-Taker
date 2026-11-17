@@ -21,9 +21,9 @@ export function TopStatsBar({
   completedChapters,
 }: TopStatsBarProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-cols-1 gap-3 xs:gap-4 sm:grid-cols-2 lg:grid-cols-4 3xl:gap-6">
       {/* 1. Total units */}
-      <div className="rounded-2xl border border-line bg-surface p-5 transition-shadow hover:shadow-sm">
+      <div className="rounded-2xl border border-line bg-surface p-4 sm:p-5 3xl:p-6 transition-shadow hover:shadow-sm">
         <div className="flex items-center justify-between text-ink-3">
           <span className="text-xs font-medium text-ink-2">Total units</span>
           <Layers className="h-4 w-4" />
@@ -35,7 +35,7 @@ export function TopStatsBar({
       </div>
 
       {/* 2. Completed */}
-      <div className="rounded-2xl border border-line bg-surface p-5 transition-shadow hover:shadow-sm">
+      <div className="rounded-2xl border border-line bg-surface p-4 sm:p-5 3xl:p-6 transition-shadow hover:shadow-sm">
         <div className="flex items-center justify-between text-ink-3">
           <span className="text-xs font-medium text-ink-2">Completed</span>
           <CheckCircle2 className="h-4 w-4 text-green" />
@@ -47,7 +47,7 @@ export function TopStatsBar({
       </div>
 
       {/* 3. Remaining */}
-      <div className="rounded-2xl border border-line bg-surface p-5 transition-shadow hover:shadow-sm">
+      <div className="rounded-2xl border border-line bg-surface p-4 sm:p-5 3xl:p-6 transition-shadow hover:shadow-sm">
         <div className="flex items-center justify-between text-ink-3">
           <span className="text-xs font-medium text-ink-2">Remaining</span>
           <Clock className="h-4 w-4" />
@@ -59,7 +59,7 @@ export function TopStatsBar({
       </div>
 
       {/* 4. Overall progress */}
-      <div className="rounded-2xl border border-line bg-surface p-5 transition-shadow hover:shadow-sm">
+      <div className="rounded-2xl border border-line bg-surface p-4 sm:p-5 3xl:p-6 transition-shadow hover:shadow-sm">
         <div className="flex items-center justify-between text-ink-3">
           <span className="text-xs font-medium text-ink-2">Overall progress</span>
           <Percent className="h-4 w-4" />

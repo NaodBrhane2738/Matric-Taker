@@ -10,6 +10,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        xs: '420px',
+        '3xl': '1920px',
+        tv: '2560px',
+      },
       colors: {
         canvas: 'var(--canvas)',
         surface: 'var(--surface)',
