@@ -37,3 +37,8 @@ services:
           type: web
           name: matric-tracker
           property: host
+      - key: VIXY_ACCOUNT_USERNAME
+        value: Vixy
+      - key: VIXY_ACCOUNT_PASSWORD
+        sync: false
+

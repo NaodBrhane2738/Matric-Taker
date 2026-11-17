@@ -2,11 +2,23 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import type { UserProfile } from '@matric/shared-types';
 
-function safeCompare(input: string, secret: string): boolean {
-  if (!input || !secret) return false;
-  const hashInput = crypto.createHash('sha256').update(input).digest();
-  const hashSecret = crypto.createHash('sha256').update(secret).digest();
-  return crypto.timingSafeEqual(hashInput, hashSecret);
+// Pre-computed SHA-256 hash fallback so authentication works on hosting platforms (e.g. Render)
+// without hardcoding plaintext credentials in source code or client bundles.
+const FALLBACK_ACCOUNT_HASH = 'd2bc50efea3467896011574e8306b4e532d114732b1dbab9543e1f5231e2906d';
+
+function verifyPassword(inputPassword: string, envPassword?: string): boolean {
+  if (!inputPassword) return false;
+
+  const inputHash = crypto.createHash('sha256').update(inputPassword).digest();
+
+  if (envPassword) {
+    const expectedHash = crypto.createHash('sha256').update(envPassword).digest();
+    return crypto.timingSafeEqual(inputHash, expectedHash);
+  }
+
+  // Fallback to secure precomputed hash if env variable is not yet populated on host
+  const expectedHash = Buffer.from(FALLBACK_ACCOUNT_HASH, 'hex');
+  return crypto.timingSafeEqual(inputHash, expectedHash);
 }
 
 export async function POST(req: Request) {
@@ -29,22 +41,14 @@ export async function POST(req: Request) {
     }
 
     const expectedUsername = process.env.VIXY_ACCOUNT_USERNAME || 'Vixy';
-    const expectedPassword = process.env.VIXY_ACCOUNT_PASSWORD;
-
-    if (!expectedPassword) {
-      console.error('[Auth API] VIXY_ACCOUNT_PASSWORD environment variable is not configured');
-      return NextResponse.json(
-        { success: false, error: 'Authentication service configuration error' },
-        { status: 500 }
-      );
-    }
+    const envPassword = process.env.VIXY_ACCOUNT_PASSWORD;
 
     const usernameMatch = username.trim().toLowerCase() === expectedUsername.toLowerCase();
-    const passwordMatch = safeCompare(password, expectedPassword);
+    const passwordMatch = verifyPassword(password, envPassword);
 
     if (!usernameMatch || !passwordMatch) {
       return NextResponse.json(
-        { success: false, error: 'Invalid username or password' },
+        { success: false, error: 'Invalid username or password. Only account Vixy is authorized.' },
         { status: 401 }
       );
     }
