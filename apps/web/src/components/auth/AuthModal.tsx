@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { generateSuperheroNickname } from '@matric/shared-utils';
+import { CloudflareTurnstile } from './CloudflareTurnstile';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -29,7 +30,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [contactEmail, setContactEmail] = useState('');
   const [guestNickname, setGuestNickname] = useState<string>(() => generateSuperheroNickname());
   const [isRobotVerified, setIsRobotVerified] = useState(false);
-  const [isVerifyingRobot, setIsVerifyingRobot] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,14 +76,15 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     setUsername(newNick);
   };
 
-  const handleRobotToggle = () => {
-    if (isRobotVerified || isVerifyingRobot) return;
-    setIsVerifyingRobot(true);
-    setTimeout(() => {
-      setIsVerifyingRobot(false);
-      setIsRobotVerified(true);
-      setError(null);
-    }, 600);
+  const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token);
+    setIsRobotVerified(true);
+    setError(null);
+  };
+
+  const handleTurnstileExpire = () => {
+    setTurnstileToken(null);
+    setIsRobotVerified(false);
   };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -105,14 +107,14 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     e.preventDefault();
     setError(null);
 
-    if (!isRobotVerified) {
-      setError('Please verify that you are not a robot before registering.');
+    if (!isRobotVerified || !turnstileToken) {
+      setError('Please complete the Cloudflare Turnstile verification before registering.');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const res = await registerPermanent(username, password, contactEmail);
+      const res = await registerPermanent(username, password, contactEmail, turnstileToken);
       if (res.success) {
         onClose();
       } else {
@@ -128,7 +130,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     setError(null);
     setIsSubmitting(true);
     try {
-      const res = await convertGuestToPermanent(username, password, contactEmail);
+      const res = await convertGuestToPermanent(username, password, contactEmail, turnstileToken || undefined);
       if (res.success) {
         onClose();
       } else {
@@ -423,55 +425,16 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               </div>
             </div>
 
-            {/* I'm not a robot Human Verification Feature */}
-            <div
-              onClick={handleRobotToggle}
-              role="checkbox"
-              aria-checked={isRobotVerified}
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === ' ' || e.key === 'Enter') {
-                  e.preventDefault();
-                  handleRobotToggle();
-                }
-              }}
-              className={`flex items-center justify-between rounded-xl border p-3 cursor-pointer select-none transition-all ${
-                isRobotVerified
-                  ? 'border-green/40 bg-green/5'
-                  : 'border-line bg-canvas hover:border-line-strong'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className={`flex h-6 w-6 items-center justify-center rounded-md border transition-all ${
-                    isRobotVerified
-                      ? 'bg-green border-green text-white'
-                      : isVerifyingRobot
-                      ? 'border-green bg-surface'
-                      : 'border-line-strong bg-surface hover:border-green'
-                  }`}
-                >
-                  {isRobotVerified ? (
-                    <Check className="h-4 w-4 stroke-[3]" />
-                  ) : isVerifyingRobot ? (
-                    <div className="h-3.5 w-3.5 rounded-full border-2 border-green border-t-transparent animate-spin" />
-                  ) : null}
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-medium text-ink">
-                    {isRobotVerified ? "I'm not a robot (Verified)" : "I'm not a robot"}
-                  </span>
-                  <span className="text-3xs text-ink-3">
-                    {isRobotVerified ? 'Human verification passed' : 'Click to verify you are human'}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex flex-col items-end pl-2">
-                <ShieldCheck className={`h-5 w-5 ${isRobotVerified ? 'text-green' : 'text-ink-3'}`} />
-                <span className="text-3xs text-ink-3 font-semibold leading-tight">reCAPTCHA</span>
-                <span className="text-3xs text-ink-3/70 leading-tight">Privacy · Terms</span>
-              </div>
+            {/* Cloudflare Turnstile Human Verification Feature */}
+            <div className="space-y-1.5">
+              <label className="block text-2xs font-semibold uppercase tracking-wider text-ink-3">
+                Security Check
+              </label>
+              <CloudflareTurnstile
+                onVerify={handleTurnstileVerify}
+                onExpire={handleTurnstileExpire}
+                onError={(err) => console.warn('Turnstile notification:', err)}
+              />
             </div>
 
             <button

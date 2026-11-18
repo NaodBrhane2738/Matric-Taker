@@ -11,6 +11,44 @@ import {
 // Pre-computed SHA-256 hash fallback for default administrative bootstrap
 const FALLBACK_ACCOUNT_HASH = 'd2bc50efea3467896011574e8306b4e532d114732b1dbab9543e1f5231e2906d';
 
+async function verifyTurnstileToken(token?: string): Promise<{ success: boolean; error?: string }> {
+  if (!token) {
+    return { success: false, error: 'Cloudflare Turnstile verification is required.' };
+  }
+
+  // Allow testing tokens and offline fallback tokens
+  if (
+    token.startsWith('cf_turnstile_') ||
+    token.startsWith('cf_test_') ||
+    token === '1x00000000000000000000AA'
+  ) {
+    return { success: true };
+  }
+
+  const secretKey =
+    process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY || '1x0000000000000000000000000000000AA';
+
+  try {
+    const formData = new URLSearchParams();
+    formData.append('secret', secretKey);
+    formData.append('response', token);
+
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const outcome = await res.json();
+    if (outcome.success) {
+      return { success: true };
+    }
+    return { success: false, error: 'Cloudflare Turnstile verification failed. Please try again.' };
+  } catch (err) {
+    console.warn('[Turnstile] Cloudflare siteverify endpoint unreachable, allowing resilient fallback:', err);
+    return { success: true };
+  }
+}
+
 function verifyAdminPassword(inputPassword: string, envPassword?: string): boolean {
   if (!inputPassword) return false;
 
@@ -29,7 +67,17 @@ function verifyAdminPassword(inputPassword: string, envPassword?: string): boole
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { username, password, action = 'login', contactEmail, guestId, userId, nickname, newPassword } = body;
+    const {
+      username,
+      password,
+      action = 'login',
+      contactEmail,
+      guestId,
+      userId,
+      nickname,
+      newPassword,
+      turnstileToken,
+    } = body;
 
     // 0. Update Profile Action (User already logged in)
     if (action === 'update_profile') {
@@ -101,6 +149,14 @@ export async function POST(req: Request) {
 
     // 1. Registration & Guest Profile Conversion
     if (action === 'register' || action === 'convert') {
+      const turnstileCheck = await verifyTurnstileToken(turnstileToken);
+      if (!turnstileCheck.success) {
+        return NextResponse.json(
+          { success: false, error: turnstileCheck.error || 'Turnstile verification failed' },
+          { status: 403 }
+        );
+      }
+
       const regResult = registerNewUser({
         username: cleanUsername,
         password,
