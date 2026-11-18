@@ -486,11 +486,43 @@ export function AdminPortalModal({ isOpen, onClose }: AdminPortalModalProps) {
                 <div className="rounded-2xl border border-green-500/30 bg-green-500/10 p-4">
                   <div className="flex items-center gap-2 text-green font-bold text-xs">
                     <CheckCircle2 className="h-4 w-4" />
-                    <span>Zero-Trust Database Security Active</span>
+                    <span>Zero-Trust Database & Anti-Bot Security Active</span>
                   </div>
                   <p className="mt-1 text-2xs text-ink-2 leading-relaxed">
-                    Row Level Security (RLS) is strictly enforced across all 16 database tables. Public anon access is completely revoked from sensitive student records.
+                    Row Level Security (RLS) is strictly enforced across all 16 database tables. Public anon access is revoked, and Cloudflare Turnstile human verification is active on all registration endpoints with zero testing banners.
                   </p>
+                </div>
+
+                {/* Cloudflare Turnstile Production Defense Box */}
+                <div className="rounded-2xl border border-orange-500/30 bg-orange-500/5 p-4 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-ink font-bold text-xs">
+                      <svg className="h-4 w-4 text-[#F38020]" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" />
+                      </svg>
+                      <span>Cloudflare Turnstile Anti-Bot Shield</span>
+                    </div>
+                    <span className="rounded-full bg-green/10 text-green px-2 py-0.5 text-3xs font-semibold border border-green/20">
+                      Zero Bypass Enforced
+                    </span>
+                  </div>
+                  <p className="text-2xs text-ink-3 leading-relaxed">
+                    Automated bots, headless browsers, synthetic clicks (<code>isTrusted: false</code>), and scrapers are strictly blocked. Single-use replay protection and honeypot traps ensure 100% human authenticity.
+                  </p>
+                  <div className="pt-1 flex flex-wrap items-center gap-2 text-3xs text-ink-2">
+                    <span className="inline-flex items-center gap-1 rounded-md bg-surface px-2 py-1 border border-line">
+                      ✓ No Test Banners
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-md bg-surface px-2 py-1 border border-line">
+                      ✓ Honeypot Trap Active
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-md bg-surface px-2 py-1 border border-line">
+                      ✓ Replay Attack Blocked
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-md bg-surface px-2 py-1 border border-line">
+                      ✓ Webdriver Filtered
+                    </span>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-2xs">

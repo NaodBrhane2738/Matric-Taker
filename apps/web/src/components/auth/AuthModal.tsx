@@ -31,6 +31,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [guestNickname, setGuestNickname] = useState<string>(() => generateSuperheroNickname());
   const [isRobotVerified, setIsRobotVerified] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [honeypot, setHoneypot] = useState('');
+  const [formInitTimestamp, setFormInitTimestamp] = useState(() => Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -114,7 +116,14 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
     setIsSubmitting(true);
     try {
-      const res = await registerPermanent(username, password, contactEmail, turnstileToken);
+      const res = await registerPermanent(
+        username,
+        password,
+        contactEmail,
+        turnstileToken,
+        honeypot,
+        formInitTimestamp
+      );
       if (res.success) {
         onClose();
       } else {
@@ -130,7 +139,14 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     setError(null);
     setIsSubmitting(true);
     try {
-      const res = await convertGuestToPermanent(username, password, contactEmail, turnstileToken || undefined);
+      const res = await convertGuestToPermanent(
+        username,
+        password,
+        contactEmail,
+        turnstileToken || undefined,
+        honeypot,
+        formInitTimestamp
+      );
       if (res.success) {
         onClose();
       } else {
@@ -348,6 +364,17 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         {/* 3. Register Permanent Account with Randomize & I'm Not a Robot */}
         {tab === 'register' && (
           <form onSubmit={handleRegisterSubmit} className="mt-5 space-y-4">
+            {/* Invisible honeypot trap to detect automated bot scrapers/agents */}
+            <input
+              type="text"
+              name="company_url_hp"
+              tabIndex={-1}
+              autoComplete="off"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              aria-hidden="true"
+              className="opacity-0 pointer-events-none absolute -left-[9999px] -top-[9999px] h-0 w-0"
+            />
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label htmlFor="reg-username" className="block text-xs font-medium text-ink-2">
@@ -451,6 +478,17 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         {/* 4. Convert Guest to Permanent */}
         {tab === 'convert' && (
           <form onSubmit={handleConvertSubmit} className="mt-5 space-y-4">
+            {/* Invisible honeypot trap to detect automated bot scrapers/agents */}
+            <input
+              type="text"
+              name="company_url_hp"
+              tabIndex={-1}
+              autoComplete="off"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              aria-hidden="true"
+              className="opacity-0 pointer-events-none absolute -left-[9999px] -top-[9999px] h-0 w-0"
+            />
             <div className="rounded-xl border border-line bg-canvas p-3 text-xs text-ink-2">
               <span className="font-semibold text-ink">Convert Profile</span>
               <p className="mt-1 text-3xs text-ink-3 leading-relaxed">

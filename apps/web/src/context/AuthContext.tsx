@@ -10,8 +10,8 @@ interface AuthContextType {
   isLoading: boolean;
   loginAsGuest: (customNickname?: string) => Promise<void>;
   loginWithPassword: (username: string, pass: string) => Promise<{ success: boolean; error?: string }>;
-  registerPermanent: (username: string, pass: string, contactEmail?: string, turnstileToken?: string) => Promise<{ success: boolean; error?: string }>;
-  convertGuestToPermanent: (username: string, pass: string, contactEmail?: string, turnstileToken?: string) => Promise<{ success: boolean; error?: string }>;
+  registerPermanent: (username: string, pass: string, contactEmail?: string, turnstileToken?: string, honeypot?: string, formInitTimestamp?: number) => Promise<{ success: boolean; error?: string }>;
+  convertGuestToPermanent: (username: string, pass: string, contactEmail?: string, turnstileToken?: string, honeypot?: string, formInitTimestamp?: number) => Promise<{ success: boolean; error?: string }>;
   updateUserProfile: (updates: { nickname?: string; contactEmail?: string; newPassword?: string }) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 }
@@ -92,7 +92,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const registerPermanent = async (username: string, pass: string, contactEmail?: string, turnstileToken?: string) => {
+  const registerPermanent = async (
+    username: string,
+    pass: string,
+    contactEmail?: string,
+    turnstileToken?: string,
+    honeypot?: string,
+    formInitTimestamp?: number
+  ) => {
     if (!username.trim()) {
       return { success: false, error: 'Username is required' };
     }
@@ -110,6 +117,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           password: pass,
           contactEmail: contactEmail?.trim() || undefined,
           turnstileToken: turnstileToken || undefined,
+          honeypot: honeypot || undefined,
+          formInitTimestamp: formInitTimestamp || undefined,
         }),
       });
 
@@ -130,7 +139,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const convertGuestToPermanent = async (username: string, pass: string, contactEmail?: string, turnstileToken?: string) => {
+  const convertGuestToPermanent = async (
+    username: string,
+    pass: string,
+    contactEmail?: string,
+    turnstileToken?: string,
+    honeypot?: string,
+    formInitTimestamp?: number
+  ) => {
     if (!user) {
       return { success: false, error: 'No active guest session found' };
     }
@@ -146,6 +162,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           contactEmail: contactEmail?.trim() || undefined,
           guestId: user.id,
           turnstileToken: turnstileToken || undefined,
+          honeypot: honeypot || undefined,
+          formInitTimestamp: formInitTimestamp || undefined,
         }),
       });
 
