@@ -18,6 +18,9 @@ import { PracticeWorkspace } from '../components/quiz/PracticeWorkspace';
 import { AnalyticsWorkspace } from '../components/analytics/AnalyticsWorkspace';
 import { AdminCurriculumWorkspace } from '../components/admin/AdminCurriculumWorkspace';
 import { AuthModal } from '../components/auth/AuthModal';
+import { UserProfileModal } from '../components/auth/UserProfileModal';
+import { AdminPortalModal } from '../components/admin/AdminPortalModal';
+import { NavigationHistoryArrows } from '../components/ui/NavigationHistoryArrows';
 import { FloatingGlassBar } from '../components/ui/GlassControls';
 import { useCurriculum } from '../context/CurriculumContext';
 import { useAuth } from '../context/AuthContext';
@@ -39,11 +42,38 @@ import type { StudySession } from '@matric/shared-types';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<string>('overview');
+  const [tabHistory, setTabHistory] = useState<string[]>(['overview']);
+  const [historyIndex, setHistoryIndex] = useState<number>(0);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isScheduleStudyModalOpen, setIsScheduleStudyModalOpen] = useState(false);
   const [editingScheduleSession, setEditingScheduleSession] = useState<StudySession | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [toastNotification, setToastNotification] = useState<string | null>(null);
+
+  const handleSelectTab = (tabId: string) => {
+    if (tabId === activeTab) return;
+    setTabHistory((prev) => [...prev.slice(0, historyIndex + 1), tabId]);
+    setHistoryIndex((prev) => prev + 1);
+    setActiveTab(tabId);
+  };
+
+  const handleGoBack = () => {
+    if (historyIndex > 0) {
+      const nextIdx = historyIndex - 1;
+      setHistoryIndex(nextIdx);
+      setActiveTab(tabHistory[nextIdx]);
+    }
+  };
+
+  const handleGoForward = () => {
+    if (historyIndex < tabHistory.length - 1) {
+      const nextIdx = historyIndex + 1;
+      setHistoryIndex(nextIdx);
+      setActiveTab(tabHistory[nextIdx]);
+    }
+  };
 
   const [renameModalState, setRenameModalState] = useState<{
     isOpen: boolean;
@@ -141,12 +171,19 @@ export default function HomePage() {
       {/* Pinned Constant Sidebar */}
       <Sidebar
         activeTab={activeTab}
-        onSelectTab={setActiveTab}
+        onSelectTab={handleSelectTab}
         totalUnits={totalUnitsCount}
         completedUnits={completedUnitsCount}
         mobileOpen={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
         onOpenAuth={() => setIsAuthModalOpen(true)}
+        onOpenProfile={() => setIsProfileModalOpen(true)}
+        onOpenAdmin={() => setIsAdminModalOpen(true)}
+        onClearProgress={async () => {
+          await clearCurriculumProgress();
+          setToastNotification('Curriculum progress reset: all checkmarks cleared (0% clean slate).');
+          setTimeout(() => setToastNotification(null), 3500);
+        }}
       />
 
       {/* Main Content Area */}
@@ -157,11 +194,22 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden p-1.5 rounded-lg border border-line text-ink-2 hover:bg-surface-2 transition-colors"
+              className="md:hidden p-1.5 rounded-lg border border-line text-ink-2 hover:bg-surface-2 transition-colors cursor-pointer"
               aria-label="Open navigation menu"
             >
               <Menu className="h-4 w-4" />
             </button>
+
+            {/* Back and Forward History Arrows */}
+            <NavigationHistoryArrows
+              canGoBack={historyIndex > 0}
+              canGoForward={historyIndex < tabHistory.length - 1}
+              onGoBack={handleGoBack}
+              onGoForward={handleGoForward}
+              previousTabName={tabHistory[historyIndex - 1]}
+              nextTabName={tabHistory[historyIndex + 1]}
+            />
+
             <span className="text-xs 3xl:text-sm font-semibold uppercase tracking-wider text-ink-3">
               {activeTab.replace('_', ' ')}
             </span>
@@ -172,25 +220,10 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => setIsScheduleStudyModalOpen(true)}
-              className="hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-green/10 text-green border border-green/20 px-3 py-1 text-2xs 3xl:text-xs font-semibold hover:bg-green/20 transition-colors shadow-2xs"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-green/10 text-green border border-green/20 px-3 py-1 text-2xs 3xl:text-xs font-semibold hover:bg-green/20 transition-colors shadow-2xs cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Schedule</span>
-            </button>
-
-            {/* Quick Clean Actions */}
-            <button
-              type="button"
-              onClick={async () => {
-                await clearCurriculumProgress();
-                setToastNotification('Curriculum progress reset: all checkmarks cleared (0% clean slate).');
-                setTimeout(() => setToastNotification(null), 3500);
-              }}
-              className="hidden xs:inline-flex items-center gap-1 rounded-xl border border-line bg-surface px-2.5 py-1 text-2xs 3xl:text-xs font-semibold text-ink-3 hover:text-ink hover:bg-surface-2 transition-colors shadow-2xs"
-              title="Reset all studied chapters to 0%"
-            >
-              <RefreshCw className="h-3 w-3" />
-              <span>Clear Progress</span>
             </button>
 
             {/* Functional Theme Switch at Top Right */}
@@ -486,23 +519,39 @@ export default function HomePage() {
         onClose={() => setIsAuthModalOpen(false)}
       />
 
+      {/* User Profile Modal */}
+      <UserProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        onOpenConvert={() => {
+          setIsProfileModalOpen(false);
+          setIsAuthModalOpen(true);
+        }}
+      />
+
+      {/* Admin Portal Modal */}
+      <AdminPortalModal
+        isOpen={isAdminModalOpen}
+        onClose={() => setIsAdminModalOpen(false)}
+      />
+
       {/* Floating Glass Control Pill with DialKit Live Tuning */}
       <FloatingGlassBar
         activeTab={activeTab}
         onOpenAllUnits={() => {
-          setActiveTab('all_units');
+          handleSelectTab('all_units');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onQuickFocus={() => {
-          setActiveTab('focus_mode');
+          handleSelectTab('focus_mode');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onOpenPlanner={() => {
-          setActiveTab('study_planner');
+          handleSelectTab('study_planner');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onOpenPractice={() => {
-          setActiveTab('practice');
+          handleSelectTab('practice');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />

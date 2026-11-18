@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'motion/react';
 import { ArrowUpRight, GraduationCap } from 'lucide-react';
 import { useCurriculum } from '../../context/CurriculumContext';
+import { useGlass } from '../ui/GlassControls';
 import type { CurriculumRoot } from '@matric/curriculum-schema';
 import type { StudentChapterProgress } from '@matric/shared-types';
 
@@ -21,6 +23,7 @@ export function ProgressByGrade({
   const curriculum = propCurriculum ?? context.curriculum;
   const progressMap = propProgressMap ?? context.progressMap;
   const isDemoMode = context.isDemoMode;
+  const { isGlassEnabled, styleCard } = useGlass();
 
   // If no curriculum and in demo mode, show standard fallback matching Screenshot 1
   const defaultGradeStats: Record<
@@ -125,11 +128,19 @@ export function ProgressByGrade({
 
       <div className="grid grid-cols-1 gap-3 xs:gap-4 sm:grid-cols-2 lg:grid-cols-4 3xl:gap-6">
         {cards.map((c) => (
-          <button
+          <motion.button
             type="button"
             key={c.grade}
+            whileHover={{ scale: 1.025, y: -3 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            style={isGlassEnabled ? styleCard : undefined}
             onClick={() => onSelectGrade?.(c.grade)}
-            className="group relative text-left cursor-pointer rounded-2xl border border-line bg-surface p-4 sm:p-5 3xl:p-6 transition-all hover:border-line-strong hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-accent"
+            className={`group relative text-left cursor-pointer rounded-2xl p-4 sm:p-5 3xl:p-6 transition-all ${
+              isGlassEnabled
+                ? 'shadow-lg border border-white/20 dark:border-white/10'
+                : 'border border-line bg-surface hover:shadow-sm'
+            }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-2 text-ink-2">
@@ -169,7 +180,7 @@ export function ProgressByGrade({
               </span>
               <span>{c.remainingCount} units left</span>
             </div>
-          </button>
+          </motion.button>
         ))}
       </div>
     </div>

@@ -76,10 +76,15 @@ export function calculatePerformanceDimensions(
   const coverage = Math.min(100, Math.round((studiedCount / totalChapters) * 100));
   const mastery = Math.min(100, Math.round((masteredCount / totalChapters) * 100));
 
-  // Readiness deduction for stale / needs-revision material
-  const revisionPenalty = totalChapters > 0 ? (needsRevisionCount / totalChapters) * 20 : 0;
-  const rawReadiness = 0.5 * mastery + 0.3 * coverage + 0.2 * Math.max(0, 100 - revisionPenalty * 5);
-  const readiness = Math.min(100, Math.max(0, Math.round(rawReadiness)));
+  // Readiness deduction for stale / needs-revision material.
+  // If no chapters have been studied yet, readiness is 0% by default for accurate clean slate.
+  let readiness = 0;
+  if (studiedCount > 0) {
+    const revisionPenalty = totalChapters > 0 ? (needsRevisionCount / totalChapters) * 20 : 0;
+    const retentionFactor = Math.max(0, 100 - revisionPenalty * 5) * (studiedCount / totalChapters);
+    const rawReadiness = 0.5 * mastery + 0.3 * coverage + 0.2 * retentionFactor;
+    readiness = Math.min(100, Math.max(0, Math.round(rawReadiness)));
+  }
 
   return {
     totalChapters,

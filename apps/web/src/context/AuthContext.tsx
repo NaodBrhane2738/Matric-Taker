@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { UserProfile } from '@matric/shared-types';
 import { generateGuestNickname, generateSuperheroNickname } from '@matric/shared-utils';
+import { offlineDb } from '../lib/offline/db';
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -11,6 +12,7 @@ interface AuthContextType {
   loginWithPassword: (username: string, pass: string) => Promise<{ success: boolean; error?: string }>;
   registerPermanent: (username: string, pass: string, contactEmail?: string) => Promise<{ success: boolean; error?: string }>;
   convertGuestToPermanent: (username: string, pass: string, contactEmail?: string) => Promise<{ success: boolean; error?: string }>;
+  updateUserProfile: (updates: { nickname?: string; contactEmail?: string; newPassword?: string }) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 }
 
@@ -169,9 +171,70 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem(GUEST_STORAGE_KEY);
-    setUser(null);
+  const updateUserProfile = async (updates: { nickname?: string; contactEmail?: string; newPassword?: string }) => {
+    if (!user) {
+      return { success: false, error: 'No active session' };
+    }
+
+    // Guest update: persist directly to localStorage
+    if (user.isGuest) {
+      const updatedUser: UserProfile = {
+        ...user,
+        nickname: updates.nickname?.trim() || user.nickname,
+        contactEmail: updates.contactEmail?.trim() || user.contactEmail,
+      };
+      localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      return { success: true };
+    }
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_profile',
+          userId: user.id,
+          nickname: updates.nickname,
+          contactEmail: updates.contactEmail,
+          newPassword: updates.newPassword,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        return { success: false, error: data.error || 'Failed to update profile' };
+      }
+
+      localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(data.user));
+      setUser(data.user);
+      return { success: true };
+    } catch (e) {
+      console.error('Update profile error:', e);
+      return { success: false, error: 'Could not connect to profile service' };
+    }
+  };
+
+  const logout = async () => {
+    try {
+      localStorage.removeItem(GUEST_STORAGE_KEY);
+      localStorage.removeItem('matric_demo_cleared');
+      // Complete privacy wipe: clear local IndexedDB tables
+      await offlineDb.chapterProgress.clear();
+      await offlineDb.studySessions.clear();
+      await offlineDb.focusSessions.clear();
+      await offlineDb.quizAttempts.clear();
+      await offlineDb.userPreferences.clear();
+      await offlineDb.syncQueue.clear();
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('matric:logout'));
+      }
+    } catch (e) {
+      console.warn('Error during logout cache wipe:', e);
+    } finally {
+      setUser(null);
+    }
   };
 
   return (
@@ -183,6 +246,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loginWithPassword,
         registerPermanent,
         convertGuestToPermanent,
+        updateUserProfile,
         logout,
       }}
     >

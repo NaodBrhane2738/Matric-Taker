@@ -125,6 +125,16 @@ export function CurriculumProvider({ children }: { children: React.ReactNode }) 
     }
 
     loadCurriculumData();
+
+    const handleLogoutPrivacyClear = () => {
+      setProgressMap({});
+      setStudySessions([]);
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('matric:logout', handleLogoutPrivacyClear);
+      return () => window.removeEventListener('matric:logout', handleLogoutPrivacyClear);
+    }
   }, []);
 
   const removeDemoData = async () => {

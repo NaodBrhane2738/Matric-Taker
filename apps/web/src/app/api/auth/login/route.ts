@@ -5,6 +5,7 @@ import {
   registerNewUser,
   authenticateUser,
   findUserByUsername,
+  updateUserProfile,
 } from '../../../../lib/server/users';
 
 // Pre-computed SHA-256 hash fallback for default administrative bootstrap
@@ -28,7 +29,57 @@ function verifyAdminPassword(inputPassword: string, envPassword?: string): boole
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { username, password, action = 'login', contactEmail, guestId } = body;
+    const { username, password, action = 'login', contactEmail, guestId, userId, nickname, newPassword } = body;
+
+    // 0. Update Profile Action (User already logged in)
+    if (action === 'update_profile') {
+      if (!userId || typeof userId !== 'string') {
+        return NextResponse.json(
+          { success: false, error: 'User ID is required to update profile' },
+          { status: 400 }
+        );
+      }
+
+      // Handle Admin Vixy profile update in-memory
+      if (userId === 'usr_vixy') {
+        const expectedAdminUsername = process.env.VIXY_ACCOUNT_USERNAME || 'Vixy';
+        const updatedVixy: UserProfile = {
+          id: 'usr_vixy',
+          username: expectedAdminUsername,
+          nickname: typeof nickname === 'string' && nickname.trim() ? nickname.trim() : expectedAdminUsername,
+          contactEmail: typeof contactEmail === 'string' && contactEmail.trim() ? contactEmail.trim() : undefined,
+          role: 'admin',
+          isGuest: false,
+          xp: 500,
+          level: 5,
+          createdAt: new Date().toISOString(),
+        };
+        return NextResponse.json({
+          success: true,
+          message: 'Admin profile updated',
+          user: updatedVixy,
+        });
+      }
+
+      const updateResult = updateUserProfile(userId, {
+        nickname: typeof nickname === 'string' && nickname.trim() ? nickname.trim() : undefined,
+        contactEmail: typeof contactEmail === 'string' ? contactEmail : undefined,
+        newPassword: typeof newPassword === 'string' && newPassword.length >= 4 ? newPassword : undefined,
+      });
+
+      if (!updateResult.success) {
+        return NextResponse.json(
+          { success: false, error: updateResult.error || 'Failed to update profile' },
+          { status: 400 }
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: 'Profile updated successfully',
+        user: updateResult.user,
+      });
+    }
 
     if (!username || typeof username !== 'string' || !username.trim()) {
       return NextResponse.json(

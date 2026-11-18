@@ -84,6 +84,13 @@ describe('Mastery & Performance Dimensions', () => {
     expect(metrics.examinationReadinessPercentage).not.toBe(metrics.knowledgeMasteryPercentage);
   });
 
+  it('defaults Examination Readiness to 0% when no chapters have been studied', () => {
+    const metrics = calculatePerformanceDimensions(10, []);
+    expect(metrics.examinationReadinessPercentage).toBe(0);
+    expect(metrics.curriculumCoveragePercentage).toBe(0);
+    expect(metrics.knowledgeMasteryPercentage).toBe(0);
+  });
+
   it('identifies weak chapters based on low score or difficulty', () => {
     const records: StudentChapterProgress[] = [
       {

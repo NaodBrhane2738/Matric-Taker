@@ -210,3 +210,50 @@ export function authenticateUser(
 
   return { success: true, user: profile };
 }
+
+export function updateUserProfile(
+  userId: string,
+  updates: {
+    nickname?: string;
+    contactEmail?: string;
+    newPassword?: string;
+  }
+): { success: boolean; user?: UserProfile; error?: string } {
+  const all = getAllUsers();
+  const user = all.find((u) => u.id === userId);
+  if (!user) {
+    return { success: false, error: 'User not found' };
+  }
+
+  if (updates.nickname && updates.nickname.trim()) {
+    user.nickname = updates.nickname.trim();
+  }
+  if (updates.contactEmail !== undefined) {
+    user.contactEmail = updates.contactEmail.trim() || undefined;
+  }
+  if (updates.newPassword && updates.newPassword.length >= 4) {
+    const salt = crypto.randomBytes(16).toString('hex');
+    user.salt = salt;
+    user.passwordHash = hashPassword(updates.newPassword, salt);
+  }
+  user.updatedAt = new Date().toISOString();
+
+  memoryUsers.set(user.username.toLowerCase(), user);
+  saveAllUsers(all);
+
+  const profile: UserProfile = {
+    id: user.id,
+    username: user.username,
+    nickname: user.nickname,
+    contactEmail: user.contactEmail,
+    role: user.role,
+    isGuest: user.isGuest,
+    xp: user.xp,
+    level: user.level,
+    createdAt: user.createdAt,
+  };
+
+  return { success: true, user: profile };
+}
+
+
